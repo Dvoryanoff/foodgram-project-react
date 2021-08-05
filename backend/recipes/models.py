@@ -4,6 +4,7 @@ from users.models import CustomUser
 
 
 class Follow(models.Model):
+    # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE,
         related_name='followers',

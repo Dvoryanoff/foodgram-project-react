@@ -1,10 +1,20 @@
 from django.contrib import admin
 
-from .models import CustomUser
+from users.models import CustomUser
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_filter = ('username', 'email')
+    list_display = (
+        'pk',
+        'username',
+        'email',
+        )
+    search_fields = (
+        'username',
+        'email')
+    list_filter = (
+        'username',
+        'email')
 
 
 admin.site.register(CustomUser, UserAdmin)

@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'YourAppName.YourClassName'
 
 
 # Application definition
@@ -43,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'users',
-    'api'
+    'api',
+    'recipes'
 
 ]
 
@@ -122,28 +122,16 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-
-    'SERIALIZERS': {
-        'user_create': 'users.serializers.CustomUserCreateSerializer',
-        'user': 'users.serializers.UserSerializer',
-        'current_user': 'users.serializers.UserSerializer'
-    },
-
+    'REQUIRED_FIELDS': 'users.CustomUser.REQUIRED_FIELDS',
+    'HIDE_USERS': False,
     'PERMISSIONS': {
-        'activation': ['rest_framework.permissions.AllowAny'],
-        'password_reset': ['rest_framework.permissions.AllowAny'],
-        'password_reset_confirm': ['rest_framework.permissions.AllowAny'],
-        'set_password': ['djoser.permissions.CurrentUserOrAdmin'],
-        'username_reset': ['rest_framework.permissions.AllowAny'],
-        'username_reset_confirm': ['rest_framework.permissions.AllowAny'],
-        'set_username': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user_create': ['rest_framework.permissions.AllowAny'],
-        'user_delete': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user': ['rest_framework.permissions.AllowAny'],
-        'user_list': ['rest_framework.permissions.AllowAny'],
-        'token_create': ['rest_framework.permissions.AllowAny'],
-        'token_destroy': ['rest_framework.permissions.IsAuthenticated'],
-    }
+        'user': [
+            'djoser.permissions.CurrentUserOrAdminOrReadOnly'
+        ],
+        'user_list': [
+            'rest_framework.permissions.AllowAny'
+        ],
+    },
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'
