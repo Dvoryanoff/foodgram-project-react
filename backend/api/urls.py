@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from .views import SubscribeListViewSet, SubscribeView, UsersViewSet
 
-
 urlpatterns = [
     path(
         'users/subscriptions/',

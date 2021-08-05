@@ -1,16 +1,14 @@
 import io
 from typing import Union
 
-from django.conf import settings
 from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import Follow
 from rest_framework import permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from recipes.models import Follow
 from users.models import CustomUser
 
 from .permissions import IsAdmin, IsAuthorOrAdmin, IsSuperuser
@@ -24,7 +22,8 @@ class UsersViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
     lookup_field = 'username'
-    permission_classes = (permissions.IsAuthenticated, Union[IsSuperuser, IsAdmin],)
+    permission_classes = (permissions.IsAuthenticated,
+                          Union[IsSuperuser, IsAdmin],)
 
     @action(
         detail=False,

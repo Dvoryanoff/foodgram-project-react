@@ -74,7 +74,7 @@ class IsAuthorOrAdmin(BasePermission):
             return True
         elif request.method in ('POST',) and request.user.is_authenticated:
             return True
-        elif (request.method in ('PUT','PATCH', 'DELETE')
+        elif (request.method in ('PUT', 'PATCH', 'DELETE')
               and request.user.is_authenticated
               and (request.user == obj.author or request.user.is_admin)):
             return True
