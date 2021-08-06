@@ -1,5 +1,27 @@
+from django.contrib.auth.models import User
 from django.db import models
+from foodgram import settings
+
 from users.models import CustomUser
+
+
+class Tag(models.Model):
+    name = models.CharField(
+        verbose_name='Название ингредиента',
+        blank=False,
+        max_length=200,
+        help_text='Укажите название ингредиента'
+    )
+    color = models.CharField(
+        verbose_name=(u'Color'),
+        max_length=7,
+        help_text=(u'HEX color, as #RRGGBB'),
+        )
+    slug = models.SlugField(
+        max_length=50,
+        unique=True,
+        verbose_name='Slug'
+        )
 
 
 class Follow(models.Model):
