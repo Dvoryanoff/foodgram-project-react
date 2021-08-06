@@ -16,12 +16,12 @@ class Tag(models.Model):
         verbose_name=(u'Color'),
         max_length=7,
         help_text=(u'HEX color, as #RRGGBB'),
-        )
+    )
     slug = models.SlugField(
         max_length=50,
         unique=True,
         verbose_name='Slug'
-        )
+    )
 
     class Meta:
         verbose_name = 'Тег',
@@ -49,8 +49,6 @@ class Ingredient(models.Model):
         ordering = ['id']
 
 
-
-
 class Follow(models.Model):
     # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
@@ -70,6 +68,7 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.user} => {self.author}'
+
 
 class Recipe(models.Model):
     tags = models.ManyToManyField(
@@ -120,6 +119,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
         ordering = ['id']
 
+
 class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
@@ -143,3 +143,82 @@ class IngredientAmount(models.Model):
         verbose_name_plural = 'Количества игредиентов'
         ordering = ['id']
 
+
+class TagRecipe(models.Model):
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Тег'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Рецепт'
+    )
+
+    class Meta:
+        verbose_name = 'Теги в рецепте',
+        verbose_name_plural = 'Теги в рецептах'
+        ordering = ['id']
+
+
+class ShoppingCart(models.Model):
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Покупатель'
+    )
+    item = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        blank=True,
+        verbose_name='Товар'
+    )
+
+    class Meta:
+        verbose_name = 'Список покупок',
+        verbose_name_plural = 'Списки покупок'
+        ordering = ['id']
+
+
+class Favorite(models.Model):
+    fav_user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Пользователь'
+    )
+    fav_item = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        blank=True,
+        verbose_name='Рецепт в избранном'
+    )
+
+    class Meta:
+        verbose_name = 'Избранное',
+        verbose_name_plural = 'Избранные'
+        ordering = ['id']
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="follower",
+        verbose_name='Подпищик'
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="following",
+        verbose_name='Автор'
+    )
+
+    class Meta:
+        verbose_name = 'Подписка',
+        verbose_name_plural = 'Подписки'
+        ordering = ['id']
