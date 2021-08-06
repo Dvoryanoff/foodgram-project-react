@@ -120,3 +120,26 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
         ordering = ['id']
 
+class IngredientAmount(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Ингредиент'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        blank=False,
+        verbose_name='Рецепт'
+    )
+    amount = models.PositiveSmallIntegerField(
+        blank=False,
+        verbose_name='Количество игредиентов'
+    )
+
+    class Meta:
+        verbose_name = 'Количество игредиентов',
+        verbose_name_plural = 'Количества игредиентов'
+        ordering = ['id']
+
