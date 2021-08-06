@@ -23,6 +23,33 @@ class Tag(models.Model):
         verbose_name='Slug'
         )
 
+    class Meta:
+        verbose_name = 'Тег',
+        verbose_name_plural = 'Теги'
+        ordering = ['id']
+
+
+class Ingredient(models.Model):
+    name = models.CharField(
+        verbose_name='Название ингредиента',
+        blank=False,
+        max_length=200,
+        help_text='Укажите название ингредиента'
+    )
+    measurement_unit = models.CharField(
+        verbose_name='Единица измерения',
+        blank=False,
+        max_length=200,
+        help_text='Укажите единицу измерения'
+    )
+
+    class Meta:
+        verbose_name = 'Игредиент',
+        verbose_name_plural = 'Игредиенты'
+        ordering = ['id']
+
+
+
 
 class Follow(models.Model):
     # id = models.AutoField(primary_key=True)
