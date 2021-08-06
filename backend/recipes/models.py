@@ -70,3 +70,53 @@ class Follow(models.Model):
 
     def __str__(self):
         return f'{self.user} => {self.author}'
+
+class Recipe(models.Model):
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True,
+        through='TagRecipe',
+        related_name='recipes',
+        verbose_name='Теги',
+    )
+    author = models.ForeignKey(
+        CustomUser,
+        blank=False,
+        on_delete=models.CASCADE,
+        related_name='recipes',
+        verbose_name='Автор рецепта',
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        blank=True,
+        through='IngredientAmount',
+        related_name='recipes',
+        verbose_name='Ингредиенты',
+    )
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=200,
+        blank=False,
+        help_text='Напишите название рецепта'
+    )
+    image = models.ImageField(
+        upload_to='image/',
+        null=False,
+        verbose_name='Картинка рецепта',
+    )
+    text = models.TextField(
+        verbose_name='Описание рецепта',
+        blank=False,
+        help_text='Добавьте сюда описание рецепта'
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        verbose_name='Время приготовления в минутах',
+        blank=False,
+        help_text='Укажите Время приготовления в минутах',
+    )
+
+    class Meta:
+        verbose_name = 'Рецепт',
+        verbose_name_plural = 'Рецепты'
+        ordering = ['id']
+
