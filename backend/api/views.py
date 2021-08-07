@@ -160,3 +160,10 @@ class TagViewSet(viewsets.ModelViewSet):
     pagination_class = None
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthorOrAdmin,)
+    pagination_class = None
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
