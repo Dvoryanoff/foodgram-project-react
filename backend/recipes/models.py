@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 from foodgram import settings
-
 from users.models import CustomUser
 
 
