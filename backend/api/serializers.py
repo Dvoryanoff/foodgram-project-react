@@ -1,6 +1,10 @@
 from django.shortcuts import get_object_or_404
-from recipes.models import Follow
-from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers, status
+from rest_framework.response import Response
+
+from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
+                            Recipe, ShoppingCart, Tag, TagRecipe)
 from users.models import CustomUser
 
 
@@ -157,13 +161,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         source='tagrecipe_set',
         many=True,
         required=False
-        )
+    )
     author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
         source='ingredientamount_set',
         many=True,
         required=False
-        )
+    )
     image = Base64ImageField(
         max_length=None, use_url=True,
     )
@@ -187,12 +191,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient = get_object_or_404(
                 Ingredient,
                 id=ingredient.get('ingredient').get('id')
-                )
+            )
             IngredientAmount.objects.create(
                 ingredient=current_ingredient,
                 recipe=recipe,
                 amount=ingredient.get('amount')
-                )
+            )
         return recipe
 
     def update(self, instance, validated_data):
@@ -203,13 +207,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.remove()
         recipe_ingredients = IngredientAmount.objects.filter(
             recipe_id=instance.id
-            )
+        )
         if not recipe_ingredients:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         recipe_ingredients.delete()
         recipe_tags = TagRecipe.objects.filter(
             recipe_id=instance.id
-            )
+        )
         if not recipe_tags:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         recipe_tags.delete()
@@ -221,12 +225,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             current_ingredient = get_object_or_404(
                 Ingredient,
                 id=ingredient.get('ingredient').get('id')
-                )
+            )
             IngredientAmount.objects.create(
                 ingredient=current_ingredient,
                 recipe=recipe,
                 amount=ingredient.get('amount')
-                )
+            )
         return recipe
 
 
@@ -242,7 +246,7 @@ class ShoppingCartCreateSerializer(serializers.ModelSerializer):
         item = get_object_or_404(
             Recipe,
             pk=validated_data.get('item').get('id')
-            )
+        )
         owner = validated_data.get('owner')
         return ShoppingCart.objects.create(item=item, owner=owner)
 
@@ -253,7 +257,7 @@ class ShoppingCartCreateSerializer(serializers.ModelSerializer):
                 owner__id=data.get('owner').get('id')).exists():
             raise serializers.ValidationError(
                 'Вы уже добавили в список покупок'
-                )
+            )
         return data
 
 
@@ -267,6 +271,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
         model = Favorite
         fields = ['id', 'name', 'image', 'cooking_time']
 
+
 class FavoriteCreateSerializer(serializers.ModelSerializer):
     fav_item = serializers.IntegerField(source='fav_item.id')
     fav_user = serializers.IntegerField(source='fav_user.id')
@@ -279,7 +284,7 @@ class FavoriteCreateSerializer(serializers.ModelSerializer):
         fav_item = get_object_or_404(
             Recipe,
             pk=validated_data.get('fav_item').get('id')
-            )
+        )
         fav_user = validated_data.get('fav_user')
         return Favorite.objects.create(fav_item=fav_item, fav_user=fav_user)
 
@@ -289,7 +294,7 @@ class FavoriteCreateSerializer(serializers.ModelSerializer):
                 fav_user__id=data.get('fav_user').get('id')).exists():
             raise serializers.ValidationError(
                 'Вы уже добавили в избранное'
-                )
+            )
         return data
 
 
