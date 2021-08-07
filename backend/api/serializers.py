@@ -150,3 +150,83 @@ class ListRecipeSerializer(serializers.ModelSerializer):
         owner = self.context.get("user_id")
         item = obj.id
         return ShoppingCart.objects.filter(owner=owner, item=item).exists()
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    tags = TagRecipeSerializer(
+        source='tagrecipe_set',
+        many=True,
+        required=False
+        )
+    author = UserSerializer(read_only=True)
+    ingredients = RecipeIngredientSerializer(
+        source='ingredientamount_set',
+        many=True,
+        required=False
+        )
+    image = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
+    class Meta:
+        fields = (
+            'id', 'tags', 'author', 'ingredients',
+            'name', 'image', 'text', 'cooking_time'
+        )
+        model = Recipe
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tagrecipe_set')
+        ingredients = validated_data.pop('ingredientamount_set')
+        recipe = Recipe.objects.create(**validated_data)
+        for tag in tags:
+            current_tag = get_object_or_404(Tag, id=tag.get('tag').get('id'))
+            TagRecipe.objects.create(
+                tag=current_tag, recipe=recipe)
+        for ingredient in ingredients:
+            current_ingredient = get_object_or_404(
+                Ingredient,
+                id=ingredient.get('ingredient').get('id')
+                )
+            IngredientAmount.objects.create(
+                ingredient=current_ingredient,
+                recipe=recipe,
+                amount=ingredient.get('amount')
+                )
+        return recipe
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tagrecipe_set')
+        ingredients = validated_data.pop('ingredientamount_set')
+        Recipe.objects.filter(id=instance.id).update(**validated_data)
+        recipe = get_object_or_404(Recipe, id=instance.id)
+        recipe.tags.remove()
+        recipe_ingredients = IngredientAmount.objects.filter(
+            recipe_id=instance.id
+            )
+        if not recipe_ingredients:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        recipe_ingredients.delete()
+        recipe_tags = TagRecipe.objects.filter(
+            recipe_id=instance.id
+            )
+        if not recipe_tags:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        recipe_tags.delete()
+        for tag in tags:
+            current_tag = get_object_or_404(Tag, id=tag.get('tag').get('id'))
+            TagRecipe.objects.create(
+                tag=current_tag, recipe=recipe)
+        for ingredient in ingredients:
+            current_ingredient = get_object_or_404(
+                Ingredient,
+                id=ingredient.get('ingredient').get('id')
+                )
+            IngredientAmount.objects.create(
+                ingredient=current_ingredient,
+                recipe=recipe,
+                amount=ingredient.get('amount')
+                )
+        return recipe
+
+
