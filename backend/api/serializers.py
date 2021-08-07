@@ -266,3 +266,28 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ['id', 'name', 'image', 'cooking_time']
+
+class FavoriteCreateSerializer(serializers.ModelSerializer):
+    fav_item = serializers.IntegerField(source='fav_item.id')
+    fav_user = serializers.IntegerField(source='fav_user.id')
+
+    class Meta:
+        model = Favorite
+        fields = ['fav_item', 'fav_user']
+
+    def create(self, validated_data):
+        fav_item = get_object_or_404(
+            Recipe,
+            pk=validated_data.get('fav_item').get('id')
+            )
+        fav_user = validated_data.get('fav_user')
+        return Favorite.objects.create(fav_item=fav_item, fav_user=fav_user)
+
+    def validate(self, data):
+        if Favorite.objects.filter(
+                fav_item__id=data.get('fav_item').get('id'),
+                fav_user__id=data.get('fav_user').get('id')).exists():
+            raise serializers.ValidationError(
+                'Вы уже добавили в избранное'
+                )
+        return data
