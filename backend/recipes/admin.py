@@ -4,13 +4,16 @@ from .models import Ingredient, Recipe, Tag
 
 admin.site.register(Tag)
 
+from import_export.admin import ImportMixin
+from .resources import IngredientResource
+
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'author',
         'recipe_favorite_count'
-        )
+    )
     search_fields = (
         'username',
         'email')
@@ -25,14 +28,25 @@ class RecipeAdmin(admin.ModelAdmin):
     recipe_favorite_count.short_description = "Число добавлений в избранное"
 
 
-class IngredientAdmin(admin.ModelAdmin):
+# class IngredientAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'name',
+#         'measurement_unit',
+#     )
+#     list_filter = (
+#         'name',)
+
+
+class IngredientAdmin(ImportMixin, admin.ModelAdmin):
+    list_filter = ('name', 'measurement_unit',)
+    search_fields = ('name',)
+    resource_class = IngredientResource
     list_display = (
         'name',
         'measurement_unit',
-        )
-    list_filter = (
-        'name',)
+    )
 
 
+# admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
