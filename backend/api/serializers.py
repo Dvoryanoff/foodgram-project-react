@@ -291,3 +291,14 @@ class FavoriteCreateSerializer(serializers.ModelSerializer):
                 'Вы уже добавили в избранное'
                 )
         return data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='item.id')
+    name = serializers.ReadOnlyField(source='item.name')
+    image = Base64ImageField(read_only=True, source='item.image')
+    cooking_time = serializers.ReadOnlyField(source='item.cooking_time')
+
+    class Meta:
+        model = ShoppingCart
+        fields = ['id', 'name', 'image', 'cooking_time']
