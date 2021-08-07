@@ -95,3 +95,63 @@ class SubscribeListViewSet(viewsets.ModelViewSet):
         page = self.paginate_queryset(subscriptions)
         serializer = FollowSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
+
+
+class FavoriteViewSet(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = FavoriteSerializer
+    pagination_class = None
+
+    def get(self, request, recipe_id):
+        fav_item = get_object_or_404(Recipe, pk=recipe_id)
+        fav_user = self.request.user
+        serializer = FavoriteCreateSerializer(
+            data={'fav_item': recipe_id, 'fav_user': fav_user.id}
+            )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(fav_user=self.request.user)
+        shopcart = get_object_or_404(
+            Favorite,
+            fav_item=fav_item,
+            fav_user=fav_user
+            )
+        serializer = FavoriteSerializer(shopcart)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, recipe_id):
+        fav_user = request.user
+        fav_item = get_object_or_404(Recipe, pk=recipe_id)
+        follow = get_object_or_404(
+            Favorite,
+            fav_item=fav_item,
+            fav_user=fav_user
+            )
+        follow.delete()
+        return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
+
+
+class ShoppingCartViewSet(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TagSerializer
+    pagination_class = None
+
+    def get(self, request, recipe_id):
+        item = get_object_or_404(Recipe, pk=recipe_id)
+        owner = self.request.user
+        serializer = ShoppingCartCreateSerializer(
+            data={'item': recipe_id, 'owner': owner.id}
+            )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(owner=self.request.user)
+        shopcart = get_object_or_404(ShoppingCart, item=item, owner=owner)
+        serializer = ShoppingCartSerializer(shopcart)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, recipe_id):
+        user = request.user
+        item = get_object_or_404(Recipe, pk=recipe_id)
+        follow = get_object_or_404(ShoppingCart, item=item, owner=user)
+        follow.delete()
+        return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
+
+

@@ -204,21 +204,3 @@ class Favorite(models.Model):
         ordering = ['id']
 
 
-class Follow(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="follower",
-        verbose_name='Подпищик'
-    )
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="following",
-        verbose_name='Автор'
-    )
-
-    class Meta:
-        verbose_name = 'Подписка',
-        verbose_name_plural = 'Подписки'
-        ordering = ['id']
