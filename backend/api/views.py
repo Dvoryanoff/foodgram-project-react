@@ -52,7 +52,7 @@ class UsersViewSet(viewsets.ModelViewSet):
             Favorite,
             fav_item=fav_item,
             fav_user=fav_user
-            )
+        )
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
 
@@ -65,14 +65,14 @@ class SubscribeView(views.APIView):
         author = get_object_or_404(CustomUser, id=user_id)
         serializer = FollowCreateSerializer(
             data={'user': user.id, 'author': user_id}
-            )
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
         follow = get_object_or_404(
             Follow,
             user=user,
             author=author
-            )
+        )
         serializer = FollowSerializer(follow)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -107,14 +107,14 @@ class FavoriteViewSet(views.APIView):
         fav_user = self.request.user
         serializer = FavoriteCreateSerializer(
             data={'fav_item': recipe_id, 'fav_user': fav_user.id}
-            )
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save(fav_user=self.request.user)
         shopcart = get_object_or_404(
             Favorite,
             fav_item=fav_item,
             fav_user=fav_user
-            )
+        )
         serializer = FavoriteSerializer(shopcart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -125,7 +125,7 @@ class FavoriteViewSet(views.APIView):
             Favorite,
             fav_item=fav_item,
             fav_user=fav_user
-            )
+        )
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
 
@@ -140,7 +140,7 @@ class ShoppingCartViewSet(views.APIView):
         owner = self.request.user
         serializer = ShoppingCartCreateSerializer(
             data={'item': recipe_id, 'owner': owner.id}
-            )
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=self.request.user)
         shopcart = get_object_or_404(ShoppingCart, item=item, owner=owner)
@@ -155,3 +155,8 @@ class ShoppingCartViewSet(views.APIView):
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
 
 
+class TagViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthorOrAdmin,)
+    pagination_class = None
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
