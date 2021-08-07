@@ -230,3 +230,28 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
 
+class ShoppingCartCreateSerializer(serializers.ModelSerializer):
+    item = serializers.IntegerField(source='item.id')
+    owner = serializers.IntegerField(source='owner.id')
+
+    class Meta:
+        model = ShoppingCart
+        fields = ['item', 'owner']
+
+    def create(self, validated_data):
+        item = get_object_or_404(
+            Recipe,
+            pk=validated_data.get('item').get('id')
+            )
+        owner = validated_data.get('owner')
+        return ShoppingCart.objects.create(item=item, owner=owner)
+
+    def validate(self, data):
+        print(data)
+        if ShoppingCart.objects.filter(
+                item__id=data.get('item').get('id'),
+                owner__id=data.get('owner').get('id')).exists():
+            raise serializers.ValidationError(
+                'Вы уже добавили в список покупок'
+                )
+        return data
