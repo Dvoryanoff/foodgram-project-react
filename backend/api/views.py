@@ -167,3 +167,84 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = None
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthorOrAdmin,)
+    queryset = Recipe.objects.all()
+    serializer_class = ListRecipeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = RecipeFilter
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"user_id": self.request.user.id})
+        return context
+
+    @action(
+        detail=False,
+        permission_classes=(permissions.IsAuthenticated,),
+        methods=['get', ])
+    def download_shopping_cart(self, request):
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+        pdfmetrics.registerFont(TTFont(
+            'FreeSans',
+            settings.STATIC_ROOT+'/FreeSans.ttf')
+            )
+        textob = c.beginText()
+        textob.setTextOrigin(inch, inch)
+        textob.setFont("FreeSans", 14)
+
+        user = request.user
+        recipes_id = ShoppingCart.objects.filter(owner=user).values('item')
+        ingredients_id = Recipe.objects.filter(
+            id__in=recipes_id
+                ).values('ingredients')
+        ingredients = Ingredient.objects.filter(id__in=ingredients_id)
+
+        lines = []
+
+        for ingredient in ingredients:
+            amount = IngredientAmount.objects.filter(
+                ingredient=ingredient,
+                recipe__in=recipes_id
+                ).aggregate(total_amount=Sum('amount'))["total_amount"]
+
+            lines.append(ingredient.name)
+            lines.append(str(amount))
+            lines.append(" ")
+            lines.append(
+                f'''{ingredient.name} ({ingredient.measurement_unit})
+                 – {str(amount)}'''
+                )
+
+        for line in lines:
+            textob.textLine(line)
+
+        c.drawText(textob)
+        c.showPage()
+        c.save()
+        buf.seek(0)
+
+        return FileResponse(buf, as_attachment=True, filename='shop.pdf')
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data['tags'] = [{'id': idx} for idx in data['tags']]
+        serializer = RecipeSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, pk, *args, **kwargs):
+        kwargs['partial'] = True
+        instance = self.get_object()
+        instance.id = pk
+        instance.save()
+        data = request.data.copy()
+        data['tags'] = [{'id': idx} for idx in data['tags']]
+        serializer = RecipeSerializer(instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=self.request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
