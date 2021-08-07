@@ -30,7 +30,7 @@ class FollowCreateSerializer(serializers.ModelSerializer):
         author = get_object_or_404(
             CustomUser,
             pk=validated_data.get('author').get('id')
-            )
+        )
         user = validated_data.get('user')
         return Follow.objects.create(user=user, author=author)
 
@@ -40,7 +40,7 @@ class FollowCreateSerializer(serializers.ModelSerializer):
                 user__id=data.get('user').get('id')).exists():
             raise serializers.ValidationError(
                 'Вы уже подписаны'
-                )
+            )
         return data
 
 
@@ -65,7 +65,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'is_subscribed',
             'recipes',
             'recipes_count',
-            )
+        )
 
     def get_is_subscribed(self, obj):
         author = obj.author
@@ -81,6 +81,7 @@ class FollowSerializer(serializers.ModelSerializer):
         author = obj.author
         count = Recipe.objects.filter(author=author).count()
         return count
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -109,7 +110,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredient.id')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
-        )
+    )
     name = serializers.ReadOnlyField(source='ingredient.name')
     amount = serializers.IntegerField()
 
@@ -118,4 +119,34 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit', 'amount']
 
 
+class ListRecipeSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    tags = TagRecipeSerializer(
+        source='tagrecipe_set',
+        many=True,
+        required=False
+    )
+    ingredients = RecipeIngredientSerializer(
+        source='ingredientamount_set',
+        many=True,
+        required=False
+    )
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+
+    def get_is_favorited(self, obj):
+        fav_user = self.context.get("user_id")
+        fav_item = obj.id
+        return Favorite.objects.filter(
+            fav_user=fav_user,
+            fav_item=fav_item
+        ).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        owner = self.context.get("user_id")
+        item = obj.id
+        return ShoppingCart.objects.filter(owner=owner, item=item).exists()
