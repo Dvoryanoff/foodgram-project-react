@@ -16,23 +16,23 @@ urlpatterns = [
         'users/subscriptions/',
         SubscribeListViewSet.as_view({'get': 'list'}),
         name='subscriptions'
-        ),
+    ),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path(
         'recipes/<int:recipe_id>/shopping_cart/',
         ShoppingCartViewSet.as_view(),
         name='shopping_cart'
-        ),
+    ),
     path(
         'recipes/<int:recipe_id>/favorite/',
         FavoriteViewSet.as_view(),
         name='favorite'
-        ),
+    ),
     path(
         'users/<int:user_id>/subscribe/',
         SubscribeView.as_view(),
         name='follow'
-        ),
+    ),
     path('', include(v1_router.urls)),
 ]

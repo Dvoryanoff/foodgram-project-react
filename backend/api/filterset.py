@@ -9,7 +9,7 @@ class RecipeFilter(rest_framework.FilterSet):
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all()
-        )
+    )
 
     is_favorited = django_filters.BooleanFilter(
         field_name='is_favorited',
