@@ -1,11 +1,11 @@
+from import_export.admin import ImportMixin
 from django.contrib import admin
+
+from .resources import IngredientResource
 
 from .models import Ingredient, Recipe, Tag
 
 admin.site.register(Tag)
-
-from import_export.admin import ImportMixin
-from .resources import IngredientResource
 
 
 class RecipeAdmin(admin.ModelAdmin):

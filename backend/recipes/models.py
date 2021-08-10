@@ -1,6 +1,4 @@
-from django.contrib.auth.models import User
 from django.db import models
-
 from foodgram import settings
 from users.models import CustomUser  # noqa
 
@@ -50,11 +48,12 @@ class Ingredient(models.Model):
 class Follow(models.Model):
     # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE,
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         related_name='followers',
         verbose_name='Пользователь подписчик')
     author = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE,
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='following',
         verbose_name='Пользователь на которого подписываемся')
 

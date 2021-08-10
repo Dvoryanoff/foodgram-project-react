@@ -6,6 +6,8 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
+                            Recipe, ShoppingCart, Tag)
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
@@ -14,9 +16,6 @@ from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Tag)
 from users.models import CustomUser
 
 from .filterset import RecipeFilter
@@ -37,6 +36,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     permission_classes = (permissions.IsAuthenticated,
                           Union[IsSuperuser, IsAdmin],)
+
     @action(
         detail=False,
         permission_classes=(permissions.IsAuthenticated,),
@@ -202,8 +202,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
         pdfmetrics.registerFont(TTFont(
             'FreeSans',
-            settings.STATIC_ROOT+'/FreeSans.ttf')
-            )
+            settings.STATIC_ROOT + '/FreeSans.ttf')
+        )
         textob = c.beginText()
         textob.setTextOrigin(inch, inch)
         textob.setFont("FreeSans", 14)
@@ -212,7 +212,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipes_id = ShoppingCart.objects.filter(owner=user).values('item')
         ingredients_id = Recipe.objects.filter(
             id__in=recipes_id
-                ).values('ingredients')
+        ).values('ingredients')
         ingredients = Ingredient.objects.filter(id__in=ingredients_id)
 
         lines = []
@@ -221,7 +221,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount = IngredientAmount.objects.filter(
                 ingredient=ingredient,
                 recipe__in=recipes_id
-                ).aggregate(total_amount=Sum('amount'))["total_amount"]
+            ).aggregate(total_amount=Sum('amount'))["total_amount"]
 
             lines.append(ingredient.name)
             lines.append(str(amount))
@@ -229,7 +229,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             lines.append(
                 f'''{ingredient.name} ({ingredient.measurement_unit})
                  – {str(amount)}'''
-                )
+            )
 
         for line in lines:
             textob.textLine(line)
