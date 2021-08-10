@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from foodgram import settings
-from users.models import CustomUser
+from users.models import CustomUser  # noqa
 
 
 class Tag(models.Model):
@@ -13,9 +13,9 @@ class Tag(models.Model):
         help_text='Укажите название ингредиента'
     )
     color = models.CharField(
-        verbose_name=(u'Color'),
+        verbose_name=u'Color',
         max_length=7,
-        help_text=(u'HEX color, as #RRGGBB'),
+        help_text=u'HEX color, as #RRGGBB',
     )
     slug = models.SlugField(
         max_length=50,
@@ -200,5 +200,3 @@ class Favorite(models.Model):
         verbose_name = 'Избранное',
         verbose_name_plural = 'Избранные'
         ordering = ['id']
-
-
