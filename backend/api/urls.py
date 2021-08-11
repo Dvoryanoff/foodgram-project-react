@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     path(
         'recipes/<int:recipe_id>/favorite/',
-        FavoriteViewSet.as_view(),source venv/Scripts/activate 
+        FavoriteViewSet.as_view(),
         name='favorite'
     ),
     path(
