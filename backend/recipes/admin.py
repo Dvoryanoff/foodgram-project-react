@@ -27,15 +27,6 @@ class RecipeAdmin(admin.ModelAdmin):
     recipe_favorite_count.short_description = "Число добавлений в избранное"
 
 
-# class IngredientAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'name',
-#         'measurement_unit',
-#     )
-#     list_filter = (
-#         'name',)
-
-
 class IngredientAdmin(ImportMixin, admin.ModelAdmin):
     list_filter = ('name', 'measurement_unit',)
     search_fields = ('name',)
@@ -46,6 +37,5 @@ class IngredientAdmin(ImportMixin, admin.ModelAdmin):
     )
 
 
-# admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)

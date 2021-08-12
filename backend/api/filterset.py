@@ -1,9 +1,8 @@
 import django_filters
-from django_filters import rest_framework
 from recipes.models import Favorite, Recipe, ShoppingCart, Tag
 
 
-class RecipeFilter(rest_framework.FilterSet):
+class RecipeFilter(django_filters.rest_framework.FilterSet):
 
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',

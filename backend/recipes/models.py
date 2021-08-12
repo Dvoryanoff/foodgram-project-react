@@ -6,7 +6,6 @@ from users.models import CustomUser  # noqa
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название ингредиента',
-        blank=False,
         max_length=200,
         help_text='Укажите название ингредиента'
     )
@@ -46,7 +45,6 @@ class Ingredient(models.Model):
 
 
 class Follow(models.Model):
-    # id = models.AutoField(primary_key=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -77,7 +75,6 @@ class Recipe(models.Model):
     )
     author = models.ForeignKey(
         CustomUser,
-        blank=False,
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name='Автор рецепта',
@@ -92,12 +89,10 @@ class Recipe(models.Model):
     name = models.CharField(
         verbose_name='Название',
         max_length=200,
-        blank=False,
         help_text='Напишите название рецепта'
     )
     image = models.ImageField(
         upload_to='image/',
-        null=False,
         verbose_name='Картинка рецепта',
     )
     text = models.TextField(
@@ -107,7 +102,6 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления в минутах',
-        blank=False,
         help_text='Укажите Время приготовления в минутах',
     )
 
@@ -121,17 +115,14 @@ class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Ингредиент'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Рецепт'
     )
     amount = models.PositiveSmallIntegerField(
-        blank=False,
         verbose_name='Количество игредиентов'
     )
 
@@ -145,13 +136,11 @@ class TagRecipe(models.Model):
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Тег'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Рецепт'
     )
 
@@ -165,7 +154,6 @@ class ShoppingCart(models.Model):
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Покупатель'
     )
     item = models.ForeignKey(
@@ -185,7 +173,6 @@ class Favorite(models.Model):
     fav_user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        blank=False,
         verbose_name='Пользователь'
     )
     fav_item = models.ForeignKey(

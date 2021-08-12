@@ -13,7 +13,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import permissions, status, views, viewsets
+from rest_framework import pagination, permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import CustomUser
@@ -59,7 +59,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
     def delete(self, request, recipe_id):
         fav_user = request.user
-        fav_item = get_object_or_404(Recipe, pk=recipe_id)
+        fav_item = get_object_or_404(Recipe)
         follow = get_object_or_404(
             Favorite,
             fav_item=fav_item,
@@ -74,7 +74,7 @@ class SubscribeView(views.APIView):
 
     def get(self, request, user_id):
         user = self.request.user
-        author = get_object_or_404(CustomUser, id=user_id)
+        author = get_object_or_404(CustomUser)
         serializer = FollowCreateSerializer(
             data={'user': user.id, 'author': user_id}
         )
@@ -90,7 +90,7 @@ class SubscribeView(views.APIView):
 
     def delete(self, request, user_id):
         user = request.user
-        author = get_object_or_404(CustomUser, id=user_id)
+        author = get_object_or_404(CustomUser)
         follow = get_object_or_404(Follow, user=user, author=author)
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
@@ -98,15 +98,11 @@ class SubscribeView(views.APIView):
 
 class SubscribeListViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
-    queryset = Follow.objects.all()
-    serializer_class = FollowSerializer
+    pagination_class = pagination.PageNumberPagination
+    serializer = FollowSerializer(pagination_class, many=True)
 
-    def list(self, request, *args, **kwargs):
-        user = self.request.user
-        subscriptions = Follow.objects.filter(user=user)
-        page = self.paginate_queryset(subscriptions)
-        serializer = FollowSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+    def get_queryset(self, *args, **kwargs):
+        return CustomUser.objects.filter(followers__user=self.request.user)
 
 
 class FavoriteViewSet(views.APIView):
@@ -115,7 +111,7 @@ class FavoriteViewSet(views.APIView):
     pagination_class = None
 
     def get(self, request, recipe_id):
-        fav_item = get_object_or_404(Recipe, pk=recipe_id)
+        fav_item = get_object_or_404(Recipe)
         fav_user = self.request.user
         serializer = FavoriteCreateSerializer(
             data={'fav_item': recipe_id, 'fav_user': fav_user.id}
@@ -132,7 +128,7 @@ class FavoriteViewSet(views.APIView):
 
     def delete(self, request, recipe_id):
         fav_user = request.user
-        fav_item = get_object_or_404(Recipe, pk=recipe_id)
+        fav_item = get_object_or_404(Recipe)
         follow = get_object_or_404(
             Favorite,
             fav_item=fav_item,
@@ -148,7 +144,7 @@ class ShoppingCartViewSet(views.APIView):
     pagination_class = None
 
     def get(self, request, recipe_id):
-        item = get_object_or_404(Recipe, pk=recipe_id)
+        item = get_object_or_404(Recipe)
         owner = self.request.user
         serializer = ShoppingCartCreateSerializer(
             data={'item': recipe_id, 'owner': owner.id}
@@ -161,7 +157,7 @@ class ShoppingCartViewSet(views.APIView):
 
     def delete(self, request, recipe_id):
         user = request.user
-        item = get_object_or_404(Recipe, pk=recipe_id)
+        item = get_object_or_404(Recipe)
         follow = get_object_or_404(ShoppingCart, item=item, owner=user)
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
