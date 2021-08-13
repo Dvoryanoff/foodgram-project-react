@@ -250,7 +250,6 @@ class ShoppingCartCreateSerializer(serializers.ModelSerializer):
         return ShoppingCart.objects.create(item=item, owner=owner)
 
     def validate(self, data):
-        print(data)
         if ShoppingCart.objects.filter(
                 item__id=data.get('item').get('id'),
                 owner__id=data.get('owner').get('id')).exists():

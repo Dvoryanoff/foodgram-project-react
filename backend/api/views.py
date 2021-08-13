@@ -57,17 +57,6 @@ class UsersViewSet(viewsets.ModelViewSet):
                 many=False)
             return Response(serializer.data)
 
-    def delete(self, request, recipe_id):
-        fav_user = request.user
-        fav_item = get_object_or_404(Recipe)
-        follow = get_object_or_404(
-            Favorite,
-            fav_item=fav_item,
-            fav_user=fav_user
-        )
-        follow.delete()
-        return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
-
 
 class SubscribeView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -111,7 +100,6 @@ class FavoriteViewSet(views.APIView):
     pagination_class = None
 
     def get(self, request, recipe_id):
-        fav_item = get_object_or_404(Recipe)
         fav_user = self.request.user
         serializer = FavoriteCreateSerializer(
             data={'fav_item': recipe_id, 'fav_user': fav_user.id}
@@ -120,7 +108,7 @@ class FavoriteViewSet(views.APIView):
         serializer.save(fav_user=self.request.user)
         shopcart = get_object_or_404(
             Favorite,
-            fav_item=fav_item,
+            fav_item=recipe_id,
             fav_user=fav_user
         )
         serializer = FavoriteSerializer(shopcart)
@@ -128,10 +116,9 @@ class FavoriteViewSet(views.APIView):
 
     def delete(self, request, recipe_id):
         fav_user = request.user
-        fav_item = get_object_or_404(Recipe)
         follow = get_object_or_404(
             Favorite,
-            fav_item=fav_item,
+            fav_item=recipe_id,
             fav_user=fav_user
         )
         follow.delete()
