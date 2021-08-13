@@ -1,7 +1,7 @@
 from django.db import models
 
 from foodgram import settings
-from users.models import CustomUser  # noqa
+from users.models import CustomUser
 
 
 class Tag(models.Model):
