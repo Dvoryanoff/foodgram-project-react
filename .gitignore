@@ -134,3 +134,4 @@ dmypy.json
 /backend/api/migrations/
 /backend/recipes/migrations/
 /backend/users/migrations/
+/backend/ingredients.json
