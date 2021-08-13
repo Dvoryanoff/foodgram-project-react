@@ -6,8 +6,6 @@ from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Tag)
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
@@ -16,6 +14,9 @@ from reportlab.pdfgen import canvas
 from rest_framework import pagination, permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
+                            Recipe, ShoppingCart, Tag)
 from users.models import CustomUser
 
 from .filterset import RecipeFilter
@@ -63,24 +64,18 @@ class SubscribeView(views.APIView):
 
     def get(self, request, user_id):
         user = self.request.user
-        author = get_object_or_404(CustomUser)
         serializer = FollowCreateSerializer(
             data={'user': user.id, 'author': user_id}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save(user=self.request.user)
-        follow = get_object_or_404(
-            Follow,
-            user=user,
-            author=author
-        )
+        follow = get_object_or_404(Follow, user=user, author_id=user_id)
         serializer = FollowSerializer(follow)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, user_id):
         user = request.user
-        author = get_object_or_404(CustomUser)
-        follow = get_object_or_404(Follow, user=user, author=author)
+        follow = get_object_or_404(Follow, user=user, author_id=user_id)
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
 
@@ -108,7 +103,7 @@ class FavoriteViewSet(views.APIView):
         serializer.save(fav_user=self.request.user)
         shopcart = get_object_or_404(
             Favorite,
-            fav_item=recipe_id,
+            fav_item_id=recipe_id,
             fav_user=fav_user
         )
         serializer = FavoriteSerializer(shopcart)
@@ -118,7 +113,7 @@ class FavoriteViewSet(views.APIView):
         fav_user = request.user
         follow = get_object_or_404(
             Favorite,
-            fav_item=recipe_id,
+            fav_item_id=recipe_id,
             fav_user=fav_user
         )
         follow.delete()
