@@ -1,5 +1,4 @@
 from django.db import models
-
 from foodgram import settings
 from users.models import CustomUser  # noqa
 
