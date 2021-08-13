@@ -126,21 +126,20 @@ class ShoppingCartViewSet(views.APIView):
     pagination_class = None
 
     def get(self, request, recipe_id):
-        item = get_object_or_404(Recipe)
         owner = self.request.user
         serializer = ShoppingCartCreateSerializer(
-            data={'item': recipe_id, 'owner': owner.id}
-        )
+            data={'item': recipe_id, 'owner': owner.id})
         serializer.is_valid(raise_exception=True)
         serializer.save(owner=self.request.user)
-        shopcart = get_object_or_404(ShoppingCart, item=item, owner=owner)
+        shopcart = get_object_or_404(
+            ShoppingCart, item_id=recipe_id, owner=owner)
         serializer = ShoppingCartSerializer(shopcart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, recipe_id):
         user = request.user
-        item = get_object_or_404(Recipe)
-        follow = get_object_or_404(ShoppingCart, item=item, owner=user)
+        follow = get_object_or_404(
+            ShoppingCart, item_id=recipe_id, owner=user)
         follow.delete()
         return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
 
