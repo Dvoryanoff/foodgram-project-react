@@ -132,6 +132,4 @@ dmypy.json
 .idea
 /backend/static/
 /backend/api/migrations/
-/backend/recipes/migrations/
-/backend/users/migrations/
 /backend/ingredients.json
