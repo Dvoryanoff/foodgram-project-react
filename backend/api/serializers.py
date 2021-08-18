@@ -84,7 +84,6 @@ class FollowSerializer(serializers.ModelSerializer):
     def get_recipes_count(self, obj):
         author = obj.author
         count = Recipe.objects.filter(author=author).count()
-        assert isinstance(count, object)
         return count
 
 
