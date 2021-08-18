@@ -11,15 +11,16 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from rest_framework import pagination, permissions, status, views, viewsets
+from rest_framework import permissions, status, views, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag)
 from users.models import CustomUser
 
-from .filterset import RecipeFilter
+from .filterset import IngredientFilter, RecipeFilter
 from .permissions import IsAdmin, IsAuthorOrAdmin, IsSuperuser
 from .serializers import (FavoriteCreateSerializer, FavoriteSerializer,
                           FollowCreateSerializer, FollowSerializer,
@@ -82,11 +83,18 @@ class SubscribeView(views.APIView):
 
 class SubscribeListViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
-    pagination_class = pagination.PageNumberPagination
+    pagination_class = PageNumberPagination
     serializer = FollowSerializer(pagination_class, many=True)
 
     def get_queryset(self, *args, **kwargs):
-        return CustomUser.objects.filter(followers__user=self.request.user)
+        return Follow.objects.filter(followers__user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        user = self.request.user
+        subscriptions = Follow.objects.filter(user=user)
+        page = self.paginate_queryset(subscriptions)
+        serializer = FollowSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class FavoriteViewSet(views.APIView):
@@ -156,6 +164,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = None
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filterset_class = IngredientFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -175,13 +184,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,),
         methods=['get', ])
     def download_shopping_cart(self, request):
-        buf = io.BytesIO()
-        c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+        buffer = io.BytesIO()
+        cnvs = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
         pdfmetrics.registerFont(TTFont(
             'FreeSans',
             settings.STATIC_ROOT + '/FreeSans.ttf')
         )
-        textob = c.beginText()
+        textob = cnvs.beginText()
         textob.setTextOrigin(inch, inch)
         textob.setFont("FreeSans", 14)
 
@@ -211,12 +220,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for line in lines:
             textob.textLine(line)
 
-        c.drawText(textob)
-        c.showPage()
-        c.save()
-        buf.seek(0)
+        cnvs.drawText(textob)
+        cnvs.showPage()
+        cnvs.save()
+        buffer.seek(0)
 
-        return FileResponse(buf, as_attachment=True, filename='shop.pdf')
+        return FileResponse(buffer, as_attachment=True, filename='shop.pdf')
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()

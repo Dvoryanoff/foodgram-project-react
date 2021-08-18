@@ -1,10 +1,17 @@
 import django_filters
 
-from recipes.models import Favorite, Recipe, ShoppingCart, Tag
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+
+
+class IngredientFilter(django_filters.rest_framework.FilterSet):
+    name = django_filters.CharFilter(field_name='name', lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name', 'measurement_unit')
 
 
 class RecipeFilter(django_filters.rest_framework.FilterSet):
-
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',

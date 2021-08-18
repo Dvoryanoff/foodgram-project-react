@@ -6,9 +6,9 @@ from users.models import CustomUser
 
 class Tag(models.Model):
     name = models.CharField(
-        verbose_name='Название ингредиента',
+        verbose_name='Название тега',
         max_length=200,
-        help_text='Укажите название ингредиента'
+        help_text='Укажите название тега'
     )
     color = models.CharField(
         verbose_name=u'Color',
@@ -42,7 +42,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Игредиент',
         verbose_name_plural = 'Игредиенты'
-        ordering = ['id']
+        ordering = ['name']
 
 
 class Follow(models.Model):
