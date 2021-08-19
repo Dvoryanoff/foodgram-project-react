@@ -9,7 +9,7 @@ services:
       - ./.env
 
   frontend:
-    image: dvoryanoff/foodgram_frontend:latest
+    image: dvoryanoff/foodgram_frontend:v1
     restart: on-failure
     volumes:
       - ../frontend/:/app/result_build/
@@ -19,7 +19,7 @@ services:
     ports:
       - '80:80'
     volumes:
-      - ./infra/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - static_value:/static/
       - media_value:/media/
       - ../frontend/build:/usr/share/nginx/html/
