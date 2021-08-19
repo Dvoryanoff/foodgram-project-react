@@ -9,7 +9,7 @@ services:
       - ./.env
 
   frontend:
-    image: dvoryanoff/foodgram_frontend:v1
+    image: dvoryanoff/foodgram_frontend:latest
     restart: on-failure
     volumes:
       - ../frontend/:/app/result_build/
