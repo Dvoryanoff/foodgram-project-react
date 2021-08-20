@@ -8,6 +8,18 @@ services:
     env_file:
       - ./.env
 
+
+  web:
+    image: dvoryanoff/foodgram_backend:latest
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - static_value:/code/static/
+      - media_value:/code/media/
+    env_file:
+    - ./.env
+
   frontend:
     image: dvoryanoff/foodgram_frontend:latest
     restart: on-failure
@@ -25,17 +37,10 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-
-  web:
-    image: dvoryanoff/foodgram_backend:latest
-    restart: always
     depends_on:
-      - db
-    volumes:
-      - static_value:/code/static/
-      - media_value:/code/media/
-    env_file:
-    - ./.env
+      - web
+
+
 
 volumes:
   postgres_data:
