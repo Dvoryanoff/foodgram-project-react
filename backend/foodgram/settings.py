@@ -131,6 +131,7 @@ DJOSER = {
     },
 }
 
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'en-us'
