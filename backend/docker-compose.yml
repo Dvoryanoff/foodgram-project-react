@@ -9,9 +9,7 @@ services:
       - ./.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: dvoryanoff/foodgram_frontend:latest
     restart: on-failure
     volumes:
       - ../frontend/:/app/result_build/
@@ -32,9 +30,7 @@ services:
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
 
   web:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: dvoryanoff/foodgram_backend:latest
     restart: always
     depends_on:
       - db
