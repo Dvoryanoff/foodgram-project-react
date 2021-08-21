@@ -7,23 +7,18 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'lu@6n%b25_v)350ax_pyd)!l6ia&&e@1i+t*zczh7h7mry$yg2'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1',
-                 'testserver',
-                 'web',
-                 '130.193.38.100',
-                 'localhost',
-                 'www.dvoryanoff.tk',
-                 'dvoryanoff.tk']
+ALLOWED_HOSTS = ['127.0.0.1', 'testserver', 'web', '130.193.38.100', 'localhost', 'www.dvoryanoff.tk', 'dvoryanoff.tk']
 
 CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
 CORS_URLS_REGEX = r'^/api/.*$'
 
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -35,8 +30,7 @@ INSTALLED_APPS = [
     'djoser',
     'users',
     'api',
-    'recipes',
-    'django.contrib.admin',
+    'recipes'
 
 ]
 
@@ -131,7 +125,6 @@ DJOSER = {
     },
 }
 
-
 AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'en-us'
@@ -144,8 +137,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/web_static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "web_static")
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-MEDIA_URL = "/web_media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "web_media")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
