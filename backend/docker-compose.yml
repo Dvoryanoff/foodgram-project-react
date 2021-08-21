@@ -15,8 +15,8 @@ services:
     depends_on:
       - db
     volumes:
-      - static_value:/code/static/
-      - media_value:/code/media/
+      - static_value:/code/web_static/
+      - media_value:/code/web_media/
     env_file:
     - ./.env
 
@@ -28,6 +28,7 @@ services:
 
   nginx:
     image: nginx:1.19.3
+    restart: always
     ports:
       - '80:80'
     volumes:
@@ -47,3 +48,4 @@ volumes:
   postgres_data:
   static_value:
   media_value:
+  frontend_data:
