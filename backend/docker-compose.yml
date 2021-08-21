@@ -24,7 +24,7 @@ services:
     image: dvoryanoff/foodgram_frontend:latest
     restart: on-failure
     volumes:
-      - ../frontend/:/app/result_build/
+      - -frontend_data:/app/build/
 
   nginx:
     image: nginx:1.19.3
