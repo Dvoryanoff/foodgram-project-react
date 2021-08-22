@@ -180,12 +180,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context.update({"user_id": self.request.user.id})
         return context
 
-    def list(self, request, *args, **kwargs):
-        recipes = Follow.objects.all()
-        page = self.paginate_queryset(recipes)
-        serializer = RecipeSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
-
     @action(
         detail=False,
         permission_classes=(permissions.IsAuthenticated,),
