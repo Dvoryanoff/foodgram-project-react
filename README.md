@@ -1,5 +1,5 @@
 # praktikum_new_diplom
-![Yamdb_workflow](https://github.com/dvoryanoff/foodgram-project-react/workflows/foodgram_workflow.yaml/badge.svg)
+![foodgram-project-react workflow](https://github.com/Dvoryanoff/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg
 
 ## Project IP
 foodgram-project-react: http://dvoryanoff.tk/
