@@ -31,7 +31,6 @@ services:
 
   web:
     image: dvoryanoff/foodgram_backend:latest
-    restart: always
     depends_on:
       - db
     volumes:
