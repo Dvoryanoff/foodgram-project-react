@@ -170,7 +170,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     queryset = Recipe.objects.all()
-    pagination_class = PageNumberPagination
     serializer_class = ListRecipeSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
