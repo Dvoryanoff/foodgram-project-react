@@ -106,15 +106,15 @@ class Recipe(models.Model):
         error_messages={'invalid': 'Убедитесь, что значение'
                                    ' больше либо равно 0'}
     )
-    pub_date = models.DateTimeField(
-        'Дата публикации',
-        auto_now_add=True
-    )
+    # pub_date = models.DateTimeField(
+    #     'Дата публикации',
+    #     auto_now_add=True
+    # )
 
     class Meta:
         verbose_name = 'Рецепт',
         verbose_name_plural = 'Рецепты'
-        ordering = ['-pub_date']
+        ordering = ['-id']
 
 
 class IngredientAmount(models.Model):
