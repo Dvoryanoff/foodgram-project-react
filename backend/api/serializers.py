@@ -142,6 +142,7 @@ class ListRecipeSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = '__all__'
 
+
     def get_is_favorited(self, obj):
         fav_user = self.context.get("user_id")
         fav_item = obj.id
