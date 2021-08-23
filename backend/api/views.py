@@ -167,7 +167,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filterset_class = IngredientFilter
 
 
-
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     queryset = Recipe.objects.all()
