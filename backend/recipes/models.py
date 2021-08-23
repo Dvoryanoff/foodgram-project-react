@@ -106,10 +106,6 @@ class Recipe(models.Model):
         error_messages={'invalid': 'Убедитесь, что значение'
                                    ' больше либо равно 0'}
     )
-    # pub_date = models.DateTimeField(
-    #     'Дата публикации',
-    #     auto_now_add=True
-    # )
 
     class Meta:
         verbose_name = 'Рецепт',
