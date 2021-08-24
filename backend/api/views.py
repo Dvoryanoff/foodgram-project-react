@@ -1,23 +1,23 @@
-import io
+# import io
 from typing import Union
 
-from django.conf import settings
-from django.db.models import Sum
-from django.http import FileResponse
+# from django.conf import settings
+# from django.db.models import Sum
+# from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
+# from reportlab.lib.pagesizes import letter
+# from reportlab.lib.units import inch
+# from reportlab.pdfbase import pdfmetrics
+# from reportlab.pdfbase.ttfonts import TTFont
+# from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
-                            Recipe, ShoppingCart, Tag)
+from recipes.models import (
+    Favorite, Follow, Ingredient, Recipe, ShoppingCart, Tag)
 from users.models import CustomUser
 
 from .filterset import IngredientFilter, RecipeFilter
@@ -28,6 +28,11 @@ from .serializers import (FavoriteCreateSerializer, FavoriteSerializer,
                           RecipeSerializer, ShoppingCartCreateSerializer,
                           ShoppingCartSerializer, TagSerializer,
                           UserSerializer)
+
+# from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
+#                             Recipe, ShoppingCart, Tag)
+
+
 
 BASE_USERNAME = 'User'
 
@@ -170,62 +175,67 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     queryset = Recipe.objects.all()
-    serializer_class = ListRecipeSerializer
+    # serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
 
+    def get_serializer_class(self):
+        if self.action != 'list' and self.action != 'retrieve':
+            return RecipeSerializer
+        return ListRecipeSerializer
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context.update({"user_id": self.request.user.id})
+        context.update({'user_id': self.request.user.id})
         return context
 
-    @action(
-        detail=False,
-        permission_classes=(permissions.IsAuthenticated,),
-        methods=['get', ])
-    def download_shopping_cart(self, request):
-        buffer = io.BytesIO()
-        cnvs = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
-        pdfmetrics.registerFont(TTFont(
-            'FreeSans',
-            settings.STATIC_ROOT + '/FreeSans.ttf')
-        )
-        textob = cnvs.beginText()
-        textob.setTextOrigin(inch, inch)
-        textob.setFont("FreeSans", 14)
-
-        user = request.user
-        recipes_id = ShoppingCart.objects.filter(owner=user).values('item')
-        ingredients_id = Recipe.objects.filter(
-            id__in=recipes_id
-        ).values('ingredients')
-        ingredients = Ingredient.objects.filter(id__in=ingredients_id)
-
-        lines = []
-
-        for ingredient in ingredients:
-            amount = IngredientAmount.objects.filter(
-                ingredient=ingredient,
-                recipe__in=recipes_id
-            ).aggregate(total_amount=Sum('amount'))["total_amount"]
-
-            lines.append(ingredient.name)
-            lines.append(str(amount))
-            lines.append(" ")
-            lines.append(
-                f'''{ingredient.name} ({ingredient.measurement_unit})
-                 – {str(amount)}'''
-            )
-
-        for line in lines:
-            textob.textLine(line)
-
-        cnvs.drawText(textob)
-        cnvs.showPage()
-        cnvs.save()
-        buffer.seek(0)
-
-        return FileResponse(buffer, as_attachment=True, filename='shop.pdf')
+    # @action(
+    #     detail=False,
+    #     permission_classes=(permissions.IsAuthenticated,),
+    #     methods=['get', ])
+    # def download_shopping_cart(self, request):
+    #     buffer = io.BytesIO()
+    #     cnvs = canvas.Canvas(buffer, pagesize=letter, bottomup=0)
+    #     pdfmetrics.registerFont(TTFont(
+    #         'FreeSans',
+    #         settings.STATIC_ROOT + '/FreeSans.ttf')
+    #     )
+    #     textob = cnvs.beginText()
+    #     textob.setTextOrigin(inch, inch)
+    #     textob.setFont("FreeSans", 14)
+    #
+    #     user = request.user
+    #     recipes_id = ShoppingCart.objects.filter(owner=user).values('item')
+    #     ingredients_id = Recipe.objects.filter(
+    #         id__in=recipes_id
+    #     ).values('ingredients')
+    #     ingredients = Ingredient.objects.filter(id__in=ingredients_id)
+    #
+    #     lines = []
+    #
+    #     for ingredient in ingredients:
+    #         amount = IngredientAmount.objects.filter(
+    #             ingredient=ingredient,
+    #             recipe__in=recipes_id
+    #         ).aggregate(total_amount=Sum('amount'))["total_amount"]
+    #
+    #         lines.append(ingredient.name)
+    #         lines.append(str(amount))
+    #         lines.append(" ")
+    #         lines.append(
+    #             f'''{ingredient.name} ({ingredient.measurement_unit})
+    #              – {str(amount)}'''
+    #         )
+    #
+    #     for line in lines:
+    #         textob.textLine(line)
+    #
+    #     cnvs.drawText(textob)
+    #     cnvs.showPage()
+    #     cnvs.save()
+    #     buffer.seek(0)
+    #
+    #     return FileResponse(buffer, as_attachment=True, filename='shop.pdf')
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
