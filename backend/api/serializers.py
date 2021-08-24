@@ -1,7 +1,6 @@
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers, status
-from rest_framework.response import Response
 
 from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
                             Recipe, ShoppingCart, Tag, TagRecipe)
@@ -220,58 +219,76 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        tags = validated_data.pop('tagrecipe_set')
-        ingredients = validated_data.pop('ingredientamount_set')
-        recipe = Recipe.objects.create(**validated_data)
+        image = validated_data.pop("image")
+        tags = validated_data.pop("tags")
+
+        request = self.context.get("request")
+        ingredients = validated_data.pop("ingredients")
+
+        recipe = Recipe.objects.create(
+            image=image, author=request.user, **validated_data
+        )
         for tag in tags:
-            current_tag = get_object_or_404(Tag, id=tag.get('tag').get('id'))
-            TagRecipe.objects.create(
-                tag=current_tag, recipe=recipe)
-        for ingredient in ingredients:
-            current_ingredient = get_object_or_404(
-                Ingredient,
-                id=ingredient.get('ingredient').get('id')
-            )
-            IngredientAmount.objects.create(
-                ingredient=current_ingredient,
+            recipe.tags.add(tag)
+
+        items = [
+            IngredientAmount(
                 recipe=recipe,
-                amount=ingredient.get('amount')
+                ingredient=get_object_or_404(Ingredient, id=item["id"]),
+                amount=item["amount"],
             )
+            for item in ingredients
+        ]
+
+        IngredientAmount.objects.bulk_create(items)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tagrecipe_set')
-        ingredients = validated_data.pop('ingredientamount_set')
-        Recipe.objects.filter(id=instance.id).update(**validated_data)
-        recipe = get_object_or_404(Recipe, id=instance.id)
-        recipe.tags.remove()
-        recipe_ingredients = IngredientAmount.objects.filter(
-            recipe_id=instance.id
-        )
-        if not recipe_ingredients:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        recipe_ingredients.delete()
-        recipe_tags = TagRecipe.objects.filter(
-            recipe_id=instance.id
-        )
-        if not recipe_tags:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        recipe_tags.delete()
+
+        tags = validated_data.pop("tags")
+        ingredients = validated_data.pop("ingredients")
+        try:
+            image = validated_data.pop("image")
+            instance.image = image
+            instance.save()
+        except KeyError:
+            pass
+
+        recipe = Recipe.objects.filter(id=instance.id)
+        recipe.update(**validated_data)
+
+        instance_tags = [tag for tag in instance.tags.all()]
+
         for tag in tags:
-            current_tag = get_object_or_404(Tag, id=tag.get('tag').get('id'))
-            TagRecipe.objects.create(
-                tag=current_tag, recipe=recipe)
-        for ingredient in ingredients:
-            current_ingredient = get_object_or_404(
-                Ingredient,
-                id=ingredient.get('ingredient').get('id')
-            )
-            IngredientAmount.objects.create(
-                ingredient=current_ingredient,
-                recipe=recipe,
-                amount=ingredient.get('amount')
-            )
-        return recipe
+            if tag in instance_tags:
+                instance_tags.remove(tag)
+            else:
+                instance.tags.add(tag)
+        instance.tags.remove(*instance_tags)
+
+        instance_ingredients = [
+            ingredient for ingredient in instance.ingredients.all()
+        ]
+        for item in ingredients:
+            amount = item["amount"]
+            id = item["id"]
+            try:
+                exist_item_ingredient = IngredientAmount.objects.get(
+                    id=id, amount=amount
+                )
+
+                instance_ingredients.remove(exist_item_ingredient.ingredient)
+            except IngredientAmount.DoesNotExist:
+                IngredientAmount.objects.create(
+                    recipe=instance,
+                    ingredient=get_object_or_404(Ingredient, id=id),
+                    amount=amount,
+                )
+
+        instance.ingredients.remove(*instance_ingredients)
+
+        return instance
 
 
 class ShoppingCartCreateSerializer(serializers.ModelSerializer):
