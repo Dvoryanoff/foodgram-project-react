@@ -7,8 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from recipes.models import (Favorite, Follow, Ingredient,
-                            Recipe, ShoppingCart, Tag)
+from recipes.models import (
+    Favorite, Follow, Ingredient, Recipe, ShoppingCart, Tag)
 from users.models import CustomUser
 
 from .filterset import IngredientFilter, RecipeFilter
