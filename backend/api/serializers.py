@@ -179,6 +179,46 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
         model = Recipe
 
+    def validate(self, data):
+        unique_ingr = data['ingredients']
+        ingr_list = []
+        for item in unique_ingr:
+            id = item['id']
+            amount = item['amount']
+            try:
+                exist_item = get_object_or_404(
+                    IngredientItem, id=id, amount=amount
+                )
+                if exist_item.ingredient in ingr_list:
+                    raise serializers.ValidationError(
+                        {
+                            'message': 'Извините,'
+                            ' но добавить одинаковые ингредиенты нельзя.'
+                        }
+                    )
+                else:
+                    ingr_list.append(exist_item.ingredient)
+            except Exception:
+                new_ingr = get_object_or_404(Ingredient, id=id)
+                if new_ingr in ingr_list:
+                    raise serializers.ValidationError(
+                        {
+                            'message': 'Извините,'
+                            ' но добавить одинаковые ингредиенты нельзя.'
+                        }
+                    )
+                else:
+                    ingr_list.append(new_ingr)
+
+        if len(ingr_list) != len(set(ingr_list)):
+            raise serializers.ValidationError(
+                {
+                    'message': 'Извините,'
+                    ' но добавить одинаковые ингредиенты нельзя.'
+                }
+            )
+        return data
+
     def create(self, validated_data):
         tags = validated_data.pop('tagrecipe_set')
         ingredients = validated_data.pop('ingredientamount_set')
