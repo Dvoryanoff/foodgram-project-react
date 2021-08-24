@@ -162,14 +162,14 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrAdmin,)
     queryset = Recipe.objects.all()
-    # serializer_class = RecipeSerializer
+    serializer_class = RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = RecipeFilter
 
-    def get_serializer_class(self):
-        if self.action != 'list' and self.action != 'retrieve':
-            return RecipeSerializer
-        return ListRecipeSerializer
+    # def get_serializer_class(self):
+    #     if self.action != 'list' and self.action != 'retrieve':
+    #         return RecipeSerializer
+    #     return ListRecipeSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
