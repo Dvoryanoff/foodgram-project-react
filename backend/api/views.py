@@ -116,7 +116,8 @@ class FavoriteViewSet(views.APIView):
             fav_user=fav_user
         )
         follow.delete()
-        return Response('Удалено', status=status.HTTP_204_NO_CONTENT)
+        return Response('Удалено',
+                        status=status.HTTP_204_NO_CONTENT)
 
 
 class ShoppingCartViewSet(views.APIView):
