@@ -1,4 +1,3 @@
-# import io
 from typing import Union
 
 # from django.conf import settings
@@ -29,10 +28,10 @@ from .serializers import (FavoriteCreateSerializer, FavoriteSerializer,
                           ShoppingCartSerializer, TagSerializer,
                           UserSerializer)
 
+# import io
+
 # from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
 #                             Recipe, ShoppingCart, Tag)
-
-
 
 BASE_USERNAME = 'User'
 
