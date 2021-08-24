@@ -1,15 +1,7 @@
 from typing import Union
 
-# from django.conf import settings
-# from django.db.models import Sum
-# from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-# from reportlab.lib.pagesizes import letter
-# from reportlab.lib.units import inch
-# from reportlab.pdfbase import pdfmetrics
-# from reportlab.pdfbase.ttfonts import TTFont
-# from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, views, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -27,11 +19,6 @@ from .serializers import (FavoriteCreateSerializer, FavoriteSerializer,
                           RecipeSerializer, ShoppingCartCreateSerializer,
                           ShoppingCartSerializer, TagSerializer,
                           UserSerializer)
-
-# import io
-
-# from recipes.models import (Favorite, Follow, Ingredient, IngredientAmount,
-#                             Recipe, ShoppingCart, Tag)
 
 BASE_USERNAME = 'User'
 
