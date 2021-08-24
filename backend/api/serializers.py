@@ -187,7 +187,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             amount = item['amount']
             try:
                 exist_item = get_object_or_404(
-                    IngredientItem, id=id, amount=amount
+                    IngredientAmount, id=id, amount=amount
                 )
                 if exist_item.ingredient in ingr_list:
                     raise serializers.ValidationError(
