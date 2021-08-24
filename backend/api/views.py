@@ -13,12 +13,11 @@ from users.models import CustomUser
 
 from .filterset import IngredientFilter, RecipeFilter
 from .permissions import IsAdmin, IsAuthorOrAdmin, IsSuperuser
-from .serializers import (FavoriteCreateSerializer, FavoriteSerializer,
-                          FollowCreateSerializer, FollowSerializer,
-                          IngredientSerializer, ListRecipeSerializer,
-                          RecipeSerializer, ShoppingCartCreateSerializer,
-                          ShoppingCartSerializer, TagSerializer,
-                          UserSerializer)
+from .serializers import (
+    FavoriteCreateSerializer, FavoriteSerializer, FollowCreateSerializer,
+    FollowSerializer, IngredientSerializer, RecipeSerializer,
+    ShoppingCartCreateSerializer, ShoppingCartSerializer, TagSerializer,
+    UserSerializer)
 
 BASE_USERNAME = 'User'
 
