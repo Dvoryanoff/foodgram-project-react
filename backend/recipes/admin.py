@@ -1,41 +1,27 @@
 from django.contrib import admin
-from import_export.admin import ImportMixin
 
-from .models import Ingredient, Recipe, Tag
-from .resources import IngredientResource
+from.models import (
+    Favorite, Ingredient, IngredientRecipe, Recipe, Tag, PurchaseList,
+    Subscribe
+)
 
-admin.site.register(Tag)
+
+class IngredientRecipeInLine(admin.TabularInline):
+    model = IngredientRecipe
 
 
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    inlines = [IngredientRecipeInLine]
+
+
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-        'author',
-        'recipe_favorite_count'
-    )
-    search_fields = (
-        'username',
-        'email')
-    list_filter = (
-        'name',
-        'author',
-        'tags')
-
-    def recipe_favorite_count(self, obj):
-        return obj.favorite_set.count()
-
-    recipe_favorite_count.short_description = "Число добавлений в избранное"
+    inlines = [IngredientRecipeInLine]
 
 
-class IngredientAdmin(ImportMixin, admin.ModelAdmin):
-    list_filter = ('name', 'measurement_unit',)
-    search_fields = ('name',)
-    resource_class = IngredientResource
-    list_display = (
-        'name',
-        'measurement_unit',
-    )
-
-
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Favorite)
+admin.site.register(IngredientRecipe)
+admin.site.register(PurchaseList)
+admin.site.register(Subscribe)
+admin.site.register(Tag)
