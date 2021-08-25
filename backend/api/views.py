@@ -1,7 +1,7 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
@@ -10,16 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .filters import RecipeFilter, SearchFilter
-from .models import (
-    Favorite, Ingredient, PurchaseList, Recipe, Subscribe, Tag
-)
+from .models import Favorite, Ingredient, PurchaseList, Recipe, Subscribe, Tag
 from .paginators import PageNumberPaginatorModified
 from .permissions import AuthorOrReadOnly
-from .serializers import (
-    FavoriteSerializer, CreateRecipeSerializer, IngredientSerializer,
-    SubscribeSerializer, SubscribersSerializer, PurchaseListSerializer,
-    TagSerializer, RecipeListSerializer
-)
+from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
+                          IngredientSerializer, PurchaseListSerializer,
+                          RecipeListSerializer, SubscribersSerializer,
+                          SubscribeSerializer, TagSerializer)
 
 User = get_user_model()
 
