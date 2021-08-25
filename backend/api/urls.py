@@ -1,41 +1,26 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (FavoriteViewSet, IngredientViewSet, RecipeViewSet,
-                    ShoppingCartViewSet, SubscribeListViewSet, SubscribeView,
-                    TagViewSet, UsersViewSet)
+from .views import (DownloadPurchaseList, FavoriteViewSet, IngredientViewSet,
+                    PurchaseListView, RecipeViewSet, SubscribeView,
+                    TagViewSet, show_subscribs)
 
-v1_router = DefaultRouter()
-v1_router.register('users', UsersViewSet)
-v1_router.register('recipes', RecipeViewSet, basename='recipes')
-v1_router.register('ingredients', IngredientViewSet, basename='ingredients')
-v1_router.register('tags', TagViewSet, basename='tag')
+router = DefaultRouter()
+
+router.register('tags', TagViewSet, basename='tags')
+router.register('recipes', RecipeViewSet, basename='recipes')
+router.register('ingredients', IngredientViewSet, basename='ingredients')
 
 urlpatterns = [
-    path(
-        'users/subscriptions/',
-        SubscribeListViewSet.as_view({'get': 'list'}),
-        name='subscriptions'
-    ),
-    path('', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken')),
-    path(
-        'recipes/<int:recipe_id>/shopping_cart/',
-        ShoppingCartViewSet.as_view(),
-        name='shopping_cart'
-    ),
-    # path('recipes/download_shopping_cart/',
-    #      RecipeViewSet.download_shopping_cart,
-    #      name='download_shopping_cart'),
-    path(
-        'recipes/<int:recipe_id>/favorite/',
-        FavoriteViewSet.as_view(),
-        name='favorite'
-    ),
-    path(
-        'users/<int:user_id>/subscribe/',
-        SubscribeView.as_view(),
-        name='follow'
-    ),
-    path('', include(v1_router.urls)),
+    path('users/subscriptions/',
+         show_subscribs, name='users_subs'),
+    path('users/<int:user_id>/subscribe/',
+         SubscribeView.as_view(), name='subscribe'),
+    path('recipes/<int:recipe_id>/favorite/',
+         FavoriteViewSet.as_view(), name='add_recipe_to_favorite'),
+    path('recipes/<int:recipe_id>/shopping_cart/',
+         PurchaseListView.as_view(), name='add_recipe_to_shopping_cart'),
+    path('recipes/download_shopping_cart/',
+         DownloadPurchaseList.as_view(), name='dowload_shopping_cart'),
+    path('', include(router.urls))
 ]
