@@ -11,8 +11,8 @@ SECRET_KEY = 'lu@6n%b25_v)350ax_pyd)!l6ia&&e@1i+t*zczh7h7mry$yg2'
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'testserver', 'web', '130.193.38.100', 'localhost', 'www.dvoryanoff.tk', 'dvoryanoff.tk']
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['127.0.0.1', 'testserver', 'web', '130.193.38.100', 'localhost', 'www.dvoryanoff.tk', 'dvoryanoff.tk']
+ALLOWED_HOSTS = ['*']
 
 CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
 
