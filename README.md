@@ -54,18 +54,25 @@
 ```
 - sudo docker-compose exec backend python manage.py createsuperuser
 ```
+## Загружаем фикстуры ингредиентов:
+```
+- sudo docker-compose exec backend  python manage.py loaddata ingredients.json
+```
 
-## После каждого обновления репозитория (git push) происходит следующее:
 
- * Проверка кода на соответствие стандарту PEP8 (с помощью пакета flake8)
+## После каждого обновления репозитория:
+
+ * Проверка кода на соответствие стандарту PEP8 (flake8)
  * Сборка и доставка докер-образов на Docker Hub
- * Автоматический деплой
+ * Деплой
  * Отправка уведомления в Telegram
 
 ## Данные для входа:
 
 ### Суперпользователь:
 
+* ## Email: superuser@mail.ru
+* ## Password: 123456
 
 
 ### Тестовый пользователь:
