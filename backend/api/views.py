@@ -38,7 +38,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPaginatorModified
 
     def perform_create(self, serializer):
-        serializer.is_valid(raise_exception=True)
         serializer.save(author=self.request.user)
 
     def get_serializer_class(self):
