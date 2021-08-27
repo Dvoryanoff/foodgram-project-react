@@ -77,6 +77,9 @@
 
 ### Тестовый пользователь:
 
+* ## Email: vpupkin@mail.ru
+* ## Password: vasyarun182
+
 
 ## Разработчик: 
 * [Владимир Дворянов](https://github.com/dvoryanoff)
