@@ -57,11 +57,8 @@ class Recipe(models.Model):
         'Дата публикации',
         auto_now_add=True
     )
-    cooking_time = models.PositiveSmallIntegerField(
-        verbose_name='Время приготовления в минутах',
-        help_text='Укажите Время приготовления в минутах',
-        error_messages={'invalid': 'Убедитесь, что значение'
-                                   ' больше либо равно 0'}
+    cooking_time = models.PositiveIntegerField(
+        'Время приготовления'
     )
 
     class Meta:
